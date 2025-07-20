@@ -3,6 +3,7 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const score = document.getElementById("score");
 const restartButton = document.createElement('button');
+const toggleButton = document.getElementById('dark-mode-toggle');
 restartButton.textContent = 'Restart';
 
 
@@ -271,6 +272,11 @@ function restart() {
 
   animate();
 }
+
+
+toggleButton.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+});
 
 document.getElementById("highscore").innerHTML = "Highscore: " + highScore;
 

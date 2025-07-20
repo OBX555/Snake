@@ -31,3 +31,25 @@
     top: 100px;
     right: 10px;
 }
+
+css
+:root {
+  --background-color: #f0f0f0;
+  --text-color: #333;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+body.dark-mode {
+  --background-color: #333;
+  --text-color: #f0f0f0;
+}
+
+#dark-mode-toggle {
+  position: absolute;
+  top: 20px;
+  left:50%;  
+}
