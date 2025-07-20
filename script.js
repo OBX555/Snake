@@ -1,6 +1,7 @@
 // Get the canvas and context
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
+const score = document.getElementById("score");
 
 // Define the game variables
 const tileSize = 5;
@@ -19,6 +20,8 @@ let snek = {
   tiles: [],
 };
 let apels = [];
+let highScore = localStorage.getItem("highScore") || 0;
+localStorage.setItem("highScore", highScore);
 
 // Add an event listener to the document to listen for keydown events
 document.addEventListener("keydown", function (e) {
@@ -54,7 +57,6 @@ document.addEventListener("keydown", function (e) {
 
 //spawns apel randomly when the game starts
 function spawnApel() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   let x = Math.floor(Math.random() * mapWidth);
   let y = Math.floor(Math.random() * mapHeight);
   while (apels.some((apel) => apel.x === x && apel.y === y)) {
@@ -85,10 +87,22 @@ function gameLoop() {
     }
   }
   //cheks if snek is touching apel
-  if (snek.head.x == apels[0].x && snek.head.y == apels[0].y) {
-    apels.shift();
-    spawnApel();
-    snek.tiles.push({ x: snek.head.x, y: snek.head.y });
+  for (let index = 0; index < apels.length; index++) {
+    const apel = apels[index];
+    if (snek.head.x == apel.x && snek.head.y == apel.y) {
+      apels.splice(index, 1);
+      spawnApel();
+      snek.tiles.push({ x: snek.head.Z, y: snek.head.y });
+      score.innerHTML = "score: " + (snek.tiles.length - 1);
+
+      // Update high score
+      if (snek.tiles.length - 1 > highScore) {
+        highScore = snek.tiles.length - 1;
+        localStorage.setItem("highScore", highScore);
+        document.getElementById("highscore").innerHTML =
+          "Highscore: " + highScore;
+      }
+    }
   }
 
   // Check if snek is out of bounds and stop the game
@@ -101,13 +115,48 @@ function gameLoop() {
     clearInterval(interval);
     interval = null;
   }
+
+  //moves the snek body to snek head
+  for (let index = snek.tiles.length - 1; index > 0; index--) {
+    snek.tiles[index] = snek.tiles[index - 1];
+  }
+  snek.tiles[0] = { x: snek.head.x, y: snek.head.y };
+
+  // checks if the snake's head has collided with any part of its own body, and if so, ends the game.
+  for (let index = 1; index < snek.tiles.length; index++) {
+    if (
+      snek.head.x == snek.tiles[index].x &&
+      snek.head.y == snek.tiles[index].y
+    ) {
+      clearInterval(interval);
+      interval = null;
+    }
+  }
+
+  highScore = localStorage.getItem("highScore");
+  if (highScore === null) {
+    highScore = 0;
+  }
 }
 
 // Animation loop
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Render snek
+  // Render snek outline
+  ctx.fillStyle = "black";
+  ctx.fillRect(
+    snek.head.x * tileSize,
+    snek.head.y * tileSize,
+    tileSize,
+    tileSize
+  );
+  // Render snek body outline
+  for (let index = 0; index < snek.tiles.length; index++) {
+    const tile = snek.tiles[index];
+    ctx.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
+  }
+  // Render snek head
   ctx.fillStyle = "green";
   ctx.fillRect(
     snek.head.x * tileSize,
@@ -119,8 +168,12 @@ function animate() {
   // Render snek body
   for (let index = 0; index < snek.tiles.length; index++) {
     const tile = snek.tiles[index];
-    ctx.fillStyle = "green";
-    ctx.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
+    ctx.fillRect(
+      tile.x * tileSize - 1,
+      tile.y * tileSize - 1,
+      tileSize - 1,
+      tileSize - 1
+    );
   }
 
   // Render apel
@@ -142,6 +195,8 @@ function animate() {
     ctx.fillText("Lil bro is dead", canvas.width / 2, canvas.height / 2);
   }
 }
+
+document.getElementById("highscore").innerHTML = "Highscore: " + highScore;
 
 // Start the game loop
 let interval = setInterval(gameLoop, speed);

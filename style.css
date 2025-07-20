@@ -7,3 +7,18 @@
     position: absolute;
     image-rendering: pixelated;
 }
+#score{
+    background-color: chartreuse;
+    position: absolute;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+#highscore{
+    background-color: rgb(177, 247, 107);
+    position: absolute;
+    border-radius: 5px;
+    padding: 10px;
+    top: 100px;
+    left: 10px;
+}
