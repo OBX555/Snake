@@ -2,6 +2,9 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const score = document.getElementById("score");
+const restartButton = document.createElement('button');
+restartButton.textContent = 'Restart';
+
 
 // Define the game variables
 const tileSize = 5;
@@ -22,6 +25,9 @@ let snek = {
 let apels = [];
 let highScore = localStorage.getItem("highScore") || 0;
 localStorage.setItem("highScore", highScore);
+
+// Add the button to your UI
+document.body.appendChild(restartButton);
 
 // Add an event listener to the document to listen for keydown events
 document.addEventListener("keydown", function (e) {
@@ -57,7 +63,7 @@ document.addEventListener("keydown", function (e) {
 
 //spawns apel randomly when the game starts
 function spawnApel() {
-  let x = Math.floor(Math.random() * mapWidth);
+   let x = Math.floor(Math.random() * mapWidth);
   let y = Math.floor(Math.random() * mapHeight);
   while (apels.some((apel) => apel.x === x && apel.y === y)) {
     x = Math.floor(Math.random() * mapWidth);
@@ -65,11 +71,12 @@ function spawnApel() {
   }
   apels.push({ x, y });
 }
+ 
 
-// Game loop
-function gameLoop() {
+function gameloop() {
   // Move snek
-  for (let index = 0; index < snekSpeed; index++) {
+  
+    for (let index = 0; index < snekSpeed; index++) {
     // Move snek head
     switch (snek.head.direction) {
       case "xp":
@@ -86,7 +93,11 @@ function gameLoop() {
         break;
     }
   }
-  //cheks if snek is touching apel
+  
+
+
+
+     //cheks if snek is touching apel
   for (let index = 0; index < apels.length; index++) {
     const apel = apels[index];
     if (snek.head.x == apel.x && snek.head.y == apel.y) {
@@ -94,18 +105,13 @@ function gameLoop() {
       spawnApel();
       snek.tiles.push({ x: snek.head.Z, y: snek.head.y });
       score.innerHTML = "score: " + (snek.tiles.length - 1);
-
-      // Update high score
-      if (snek.tiles.length - 1 > highScore) {
-        highScore = snek.tiles.length - 1;
-        localStorage.setItem("highScore", highScore);
-        document.getElementById("highscore").innerHTML =
-          "Highscore: " + highScore;
-      }
-    }
   }
+}
+  
+  
 
-  // Check if snek is out of bounds and stop the game
+     
+    // Check if snek is out of bounds and stop the game
   if (
     snek.head.x < 0 ||
     snek.head.x > mapWidth ||
@@ -122,7 +128,10 @@ function gameLoop() {
   }
   snek.tiles[0] = { x: snek.head.x, y: snek.head.y };
 
-  // checks if the snake's head has collided with any part of its own body, and if so, ends the game.
+  
+
+  
+    // checks if the snake's head has collided with any part of its own body, and if so, ends the game.
   for (let index = 1; index < snek.tiles.length; index++) {
     if (
       snek.head.x == snek.tiles[index].x &&
@@ -133,11 +142,29 @@ function gameLoop() {
     }
   }
 
-  highScore = localStorage.getItem("highScore");
+  
+
+     highScore = localStorage.getItem("highScore");
   if (highScore === null) {
     highScore = 0;
   }
+
+  // Update high score
+      if (snek.tiles.length - 1 > highScore) {
+        highScore = snek.tiles.length - 1;
+        localStorage.setItem("highScore", highScore);
+        document.getElementById("highscore").innerHTML =
+          "Highscore: " + highScore;
+      }
+  
+ 
+  restartButton.onclick = () => {
+  // Reload the application
+  window.location.reload();
+};
+
 }
+
 
 // Animation loop
 function animate() {
@@ -199,7 +226,7 @@ function animate() {
 document.getElementById("highscore").innerHTML = "Highscore: " + highScore;
 
 // Start the game loop
-let interval = setInterval(gameLoop, speed);
+let interval = setInterval( gameloop ,speed);
 
 // Start the animation loop
 animate();
